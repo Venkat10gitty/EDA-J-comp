@@ -24,7 +24,7 @@ calculate_sigmoid <- function(standardized_data_matrix, coefficient_data_matrix_
     exp_value = 1+exp(-result_matrix[i])  
     sigmoid_vector[i] <- c(1/exp_value) 
   }
-  return (sigmoid_vector)
+  return (sigmoid_vector) * exp_value
 }
 
 # Function calculate_MSE calculates the mean_squared_error 
