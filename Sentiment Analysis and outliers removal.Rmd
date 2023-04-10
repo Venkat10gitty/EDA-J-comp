@@ -1,0 +1,158 @@
+---
+title: "lab8a"
+author: "Bacham Sai Venkat Teja - 20BCE1551"
+date: "26/02/2023"
+output: pdf_document
+---
+
+```{r}
+#import the dataset
+
+dset<-read.csv("/Mall_Customers.csv")
+head(dset)
+colnames(dset)
+
+#drop null values (if any)
+
+dset = na.omit(dset)
+
+#removing customer id column as we dont need it
+
+dset = subset(dset, select = -c(CustomerID) )
+head(dset)
+
+```
+
+```{r}
+#summary about age
+
+summary(dset$Age)
+
+#Inference =
+#with this summarization we can understand that the mean age of customers 
+#visiting the store is 29 whereas the maximum age of customers is 70 and 
+#minimum age is 18
+
+#summary about Annual Income
+
+summary(dset$Annual.Income..k..)
+
+#Inference =
+#with this summarization we can understand that the mean income of customers 
+#visiting the store is 41.5 whereas the highest income of customers is 137 and 
+#least income is 15
+
+#summary about Spending Score
+
+summary(dset$Spending.Score..1.100.)
+
+#Inference =
+#with this summarization we can understand that no customer got the highest 
+#score of 100 but a mean score given to customers is 35
+
+```
+
+```{r}
+#Boxplot for spending score and age and income
+
+boxplot(dset$Spending.Score..1.100.,
+        col="green",
+        main="Spending Score",
+        labels=TRUE)
+```
+
+```{r}
+boxplot(dset$Age,
+        col="orange",
+        main="Age",
+        labels=TRUE)
+```
+
+```{r}
+boxplot(dset$Annual.Income..k..,
+        col="yellow",
+        main="Annnual Income",
+        labels=TRUE)
+
+#Inference =
+#From the boxplot of Annual Income we can notice that the highest annual income #(i.e. 137) is actually an outlier
+```
+
+```{r}
+#find the distribution of male and female customers
+
+gend = table(dset$Gender)
+print(gend)
+
+#Inference =
+#there are 112 female customers and 88 male customers
+```
+
+```{r}
+#barplot to show the gender distribution
+
+barplot(gend,main="Gender Distribution",
+        ylab="Count",
+        xlab="Gender",
+        col = c("red", "green"),
+        legend=rownames(gend))
+```
+
+```{r}
+#histogram to show the age distribution in different groups of same diference
+
+hist(dset$Age,
+     col="yellow",
+     main="Age distribution",
+     xlab="Age group",
+     ylab="Count",
+     labels=TRUE)
+
+#Inference = 
+#From the histogram we can conclude that the majority of customers are from the
+#age group 30-40 and the least customers are from 60-65 also the maximum number #of customers are below the age of 40
+```
+
+```{r}
+#histogram to show the annual income distribution in different groups of 
+#same diference
+
+hist(dset$Annual.Income..k..,
+     col="yellow",
+     main="Annual Income Distribution",
+     xlab="Annual Income Range",
+     ylab="Count",
+     labels=TRUE)
+
+#Inference = 
+#From the histogram we can conclude that the majority of customers are have an 
+#average annual income of 80 or below
+```
+
+```{r}
+#Applying k-means to cluster the customers
+
+clus = kmeans(dset[,2:4],4,iter.max=100,nstart=50,algorithm="Lloyd")
+clus
+
+library(ggplot2)
+ggplot(dset, aes(x =Annual.Income..k.., y = Spending.Score..1.100.)) + 
+  geom_point(stat = "identity", aes(color = as.factor(clus$cluster))) +
+  scale_color_discrete(name=" ",
+                       breaks=c("1", "2", "3", "4"),
+                       labels=c("Cluster1","Cluster2","Cluster3","Cluster4")) +
+  ggtitle("Clusters of Customers")
+
+#Inference =
+#The "blue" cluster shows the customers who have high spending score and have 
+#low annual income
+
+#The "purple" cluster shows the customers who have high spending score and have 
+#high annual income
+
+#The "red" cluster shows the customers who have low spending score and have 
+#low annual income
+
+#The "green" cluster shows the customers who have low spending score and have 
+#high annual income
+```
