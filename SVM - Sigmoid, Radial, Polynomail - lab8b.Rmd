@@ -1,0 +1,150 @@
+---
+title: "lab8b"
+author: "Bacham Sai Venkat Teja - 20BCE1551"
+date: "27/02/2023"
+output: pdf_document
+---
+
+```{r}
+#import the dataset
+
+dset<-read.csv("Mall_Customers.csv")
+head(dset)
+colnames(dset)
+
+#drop null values (if any)
+
+dset = na.omit(dset)
+
+#for this lab experiment we will be using Gender as the target feature and Age,
+#Annual Income as the independent features
+
+dset = subset(dset, select = -c(CustomerID, Spending.Score..1.100.) )
+head(dset)
+```
+
+```{r}
+#Label Encoding for the "Gender" column
+
+library(dplyr)
+
+dset %>%
+  group_by(Gender) %>%
+  summarize(Freq=n())
+
+dset$Gender <- as.numeric(factor(dset$Gender))
+
+dset %>%
+  group_by(Gender) %>%
+  summarize(Freq=n())
+
+#Female = 1
+#Male = 2
+```
+
+```{r}
+#train-test split
+
+library(caTools)
+
+split = sample.split(dset$Gender, SplitRatio = 0.8)
+train = subset(dset, split == TRUE)
+test = subset(dset, split == FALSE)
+
+#import the library for SVM
+
+library(e1071)
+```
+
+```{r}
+#kernel = "sigmoid"
+
+sig = svm(formula = Gender ~ .,
+          data = train,
+          type = 'C-classification',
+          kernel = 'sigmoid')
+
+pred_sig<-predict(sig, test)
+```
+
+```{r}
+#confusion matrix for SVM with sigmoid
+
+cm1 <- table(test$Gender, pred_sig)
+cm1
+```
+
+```{r}
+#accuracy for SVM with sigmoid
+
+acc1 <- sum(diag(cm1)) / sum(cm1)
+print(paste('Accuracy for Sigmoid Kernel is ', acc1))
+```
+
+```{r}
+#graph for SVM with sigmoid
+
+plot(sig, train)
+```
+
+```{r}
+#kernel = "radial"
+
+rad = svm(formula = Gender ~ .,
+          data = train,
+          type = 'C-classification',
+          kernel = 'radial')
+
+pred_rad<-predict(rad, test)
+```
+
+```{r}
+#confusion matrix for SVM with radial
+
+cm2 <- table(test$Gender, pred_rad)
+cm2
+```
+
+```{r}
+#accuracy for SVM with radial
+
+acc2 <- sum(diag(cm2)) / sum(cm2)
+print(paste('Accuracy for Radial Kernel is ', acc2))
+```
+
+```{r}
+#graph for SVM with radial
+
+plot(rad, train)
+```
+
+```{r}
+#kernel = "polynomial"
+
+pol = svm(formula = Gender ~ .,
+          data = train,
+          type = 'C-classification',
+          kernel = 'polynomial')
+
+pred_pol<-predict(pol, test)
+```
+
+```{r}
+#confusion matrix for SVM with polynomial
+
+cm3 <- table(test$Gender, pred_pol)
+cm3
+```
+
+```{r}
+#accuracy for SVM with polynomial
+
+acc3 <- sum(diag(cm3)) / sum(cm3)
+print(paste('Accuracy for Polynomial Kernel is ', acc3))
+```
+
+```{r}
+#graph for SVM with polynomial
+
+plot(pol, train)
+```
